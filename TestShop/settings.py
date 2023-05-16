@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    'mht.apps.MainConfig'
+    'mht'
 ]
 
 MIDDLEWARE = [
@@ -63,7 +63,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'TestShop.wsgi.application'
+WSGI_APPLICATION = 'wsgi.application'
 
 
 # Database
