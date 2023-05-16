@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    'mht.apps.MainConfig'
+    'TestShop.mht.apps.MainConfig'
 ]
 
 MIDDLEWARE = [
