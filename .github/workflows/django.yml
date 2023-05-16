@@ -39,4 +39,4 @@ jobs:
           heroku_email: ${{secrets.HEROKU_EMAIL}}
           buildpack: 'heroku/puthon'
       - run: |
-        heroku run python TestShop/manage.py migrate --app ${{secrets.HEROKU_APP_NAME}}
+          heroku run python TestShop/manage.py migrate --app ${{secrets.HEROKU_APP_NAME}}
