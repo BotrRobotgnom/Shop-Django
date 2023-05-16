@@ -38,4 +38,5 @@ jobs:
           heroku_app_name: ${{secrets.HEROKU_APP_NAME}}
           heroku_email: ${{secrets.HEROKU_EMAIL}}
           buildpack: 'heroku/python'
-
+      - run: |
+          heroku run python TestShop/manage.py migrate --app ${{secrets.HEROKU_APP_NAME}}
