@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Авторизація</title>
+</head>
+<body>
+  <h2>Авторизація</h2>
+  <form method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <label for="username">Ім'я користувача:</label>
+    <input type="text" id="username" name="username" required><br><br>
+    <label for="password">Пароль:</label>
+    <input type="password" id="password" name="password" required><br><br>
+    <input type="submit" value="Увійти">
+  </form>
+</body>
+</html>

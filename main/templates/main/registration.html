@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Реєстрація</title>
+</head>
+<body>
+  <h2>Реєстрація</h2>
+  <form method="post" action="{% url 'register' %}">
+    {% csrf_token %}
+    <label for="username">Ім'я користувача:</label>
+    <input type="text" id="username" name="username" required><br><br>
+    <label for="password">Пароль:</label>
+    <input type="password" id="password" name="password" required><br><br>
+    <input type="submit" value="Зареєструватися">
+  </form>
+</body>
+</html>
