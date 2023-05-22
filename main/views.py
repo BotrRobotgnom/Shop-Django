@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.http import HttpResponse
 
 # Create your views here.
@@ -29,11 +29,12 @@ def register(request):
         password = request.POST['password']
         try:
             user = User.objects.get(username=username)
-            return render(request, 'registration.html', {'error': 'Користувач з таким іменем вже існує'})
+            messages.error(request, 'Користувач з таким іменем вже існує')
+            return render(request, 'main/registration.html')
         except User.DoesNotExist:
             user = User.objects.create_user(username=username, password=password)
             auth.login(request, user)
-            return redirect('home')
+            return redirect('/')
     else:
         return render(request, 'main/registration.html')
 
@@ -44,8 +45,9 @@ def login(request):
         user = auth.authenticate(username=username, password=password)
         if user is not None:
             auth.login(request, user)
-            return redirect('home')
+            return redirect('/')
         else:
-            return render(request, 'login.html', {'error': 'Невірне ім\'я користувача або пароль'})
+            messages.error(request, 'Невірне ім\'я користувача або пароль')
+            return render(request, 'main/login.html')
     else:
         return render(request, 'main/login.html')
