@@ -66,17 +66,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'TestShop.wsgi.application'
 
 
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': os.getenv('django.db.backends.postgresql_psycopg2', 'django.db.backends.sqlite3'),
+        'NAME': os.getenv('DB_NAME', 'db.sqlite3'),
+        'USER': os.getenv('DB_USER', ''),
+        'PASSWORD': os.getenv('DB_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', ''),
+        'PORT': os.getenv('DB_PORT', ''),
     }
 }
-db_from_env = dj_database_url.config()
-DATABASES['default'].update(db_from_env)
+
+db = dj_database_url.config()
+DATABASES['default'].update(db)
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
