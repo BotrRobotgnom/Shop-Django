@@ -33,8 +33,7 @@ def register(request):
             messages.error(request, 'Користувач з таким іменем вже існує')
             return render(request, 'main/registration.html')
         except User.DoesNotExist:
-            user = User(username=username, password=password)
-            user.save()
+            user = User.objects.create_user(username=username, password=password)
             auth.login(request, user)
             return redirect('/')
     else:
