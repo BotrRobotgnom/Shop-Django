@@ -28,12 +28,11 @@ def register(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        try:
-            user = User.objects.get(username=username)
+        user = auth.authenticate(username=username, password=password)
+        if user is not None:
             messages.error(request, 'Користувач з таким іменем вже існує')
             return render(request, 'main/registration.html')
-        except User.DoesNotExist:
-            user = User.objects.create_user(username=username, password=password)
+        else:
             auth.login(request, user)
             return redirect('/')
     else:
