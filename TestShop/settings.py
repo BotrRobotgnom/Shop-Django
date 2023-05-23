@@ -18,7 +18,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', get_random_secret_key())
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'intense-gorge-59251.herokuapp.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'django-test-shop.herokuapp.com']
 
 
 # Application definition
@@ -50,7 +50,7 @@ ROOT_URLCONF = 'TestShop.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -72,12 +72,12 @@ WSGI_APPLICATION = 'TestShop.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('django.db.backends.postgresql_psycopg2', 'django.db.backends.sqlite3'),
-        'NAME': os.getenv('DB_NAME', 'db.sqlite3'),
-        'USER': os.getenv('DB_USER', ''),
-        'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', ''),
-        'PORT': os.getenv('DB_PORT', ''),
+        'ENGINE': os.environ.get('django.db.backends.postgresql', 'django.db.backends.sqlite3'),
+        'NAME': os.environ.get('DB_NAME', 'db.sqlite3'),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
+        'HOST': os.environ.get('DB_HOST', ''),
+        'PORT': os.environ.get('DB_PORT', ''),
     }
 }
 
@@ -127,4 +127,3 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-django_heroku.settings(locals())
