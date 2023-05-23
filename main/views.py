@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
 from django.contrib import auth, messages
 from django.http import HttpResponse
+from .models import User, Account
+
 
 # Create your views here.
 def index(request):
@@ -32,7 +33,8 @@ def register(request):
             messages.error(request, 'Користувач з таким іменем вже існує')
             return render(request, 'main/registration.html')
         except User.DoesNotExist:
-            user = User.objects.create_user(username=username, password=password)
+            user = User(username=username, password=password)
+            user.save()
             auth.login(request, user)
             return redirect('/')
     else:
