@@ -6,7 +6,7 @@ class RegistrationTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.register_url = reverse('main/registration.html')
+        self.register_url = reverse('register')
 
     def test_registration_form(self):
         response = self.client.get(self.register_url)
@@ -27,7 +27,7 @@ class LoginTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.login_url = reverse('login.html')
+        self.login_url = reverse('login')
         self.username = 'testuser'
         self.password = 'testpassword'
         User.objects.create_user(username=self.username, password=self.password)
