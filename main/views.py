@@ -28,13 +28,13 @@ def register(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        user = auth.authenticate(username=username, password=password)
+        user = auth.get_user(username=username)
         if user is not None:
             messages.error(request, 'Користувач з таким іменем вже існує')
             return render(request, 'main/registration.html')
         else:
-            auth.login(request, user)
-            return redirect('/')
+            user = auth.authenticate(username=username, password=password)
+            return redirect('login')
     else:
         return render(request, 'main/registration.html')
 
