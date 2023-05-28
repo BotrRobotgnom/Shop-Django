@@ -10,4 +10,5 @@ urlpatterns = [
     path('contact.html', views.contact),
     path('registration.html', views.register),
     path('login.html', views.login),
+    path('logout/', views.logout_user, name='logout'),
 ]
