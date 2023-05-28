@@ -74,7 +74,7 @@ AUTH_USER_MODEL = 'main.User'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('django.db.backends.postgresql', 'django.db.backends.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ.get('DB_NAME', 'db.sqlite3'),
         'USER': os.environ.get('DB_USER', ''),
         'PASSWORD': os.environ.get('DB_PASSWORD', ''),
