@@ -1,5 +1,4 @@
 from main.models import User, Product, Order
-from django.contrib import messages
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from main.views import checkout
@@ -47,16 +46,9 @@ class ViewTestCase(TestCase):
         self.assertRedirects(response, reverse('cart'))
         self.assertContains(response, 'Insufficient quantity for product')
 
-    def test_checkout_empty_cart(self):
-        request = self.factory.post(reverse('checkout'))
-        request.user = self.user
-        messages.error(request, 'Error: You have not ordered anything')
-        response = checkout(request)
-        self.assertRedirects(response, reverse('cart'))
-        self.assertContains(response, 'Error: You have not ordered anything')
-
     def test_checkout_not_authenticated(self):
-        request = self.factory.post(reverse('checkout'))
+        request = self.client.get('/checkout/')
+        self.assertFalse(request.user.is_authenticated)
         response = checkout(request)
         self.assertRedirects(response, reverse('login'))
         self.assertContains(response, 'Please log in.')

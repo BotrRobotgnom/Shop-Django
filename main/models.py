@@ -31,16 +31,12 @@ class Order(models.Model):
     items = {}  # словник для зберігання продуктів та їх кількостей
 
     def add_item(self, product, quantity=1):
-        print(product)
-        print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
         if product in self.items:
             self.items[product] += quantity
         else:
             self.items[product] = quantity
 
     def remove_item(self, product):
-        print(product)
-        print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
         del self.items[product]
 
     def get_total_price(self):
