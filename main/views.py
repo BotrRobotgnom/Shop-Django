@@ -46,6 +46,10 @@ def cart(request):
     if request.user.is_authenticated:
         user = request.user
         orders = Order.objects.filter(user=user, status=Order.AWAIT)
+        for order in orders:
+            if len(order.items.copy()) == 0:
+                order.delete()
+        orders = Order.objects.filter(user=user, status=Order.AWAIT)
     else:
         orders = []
     context = {
@@ -62,12 +66,26 @@ def remove_from_cart(request, order_id, product_id):
     return redirect('cart')
 
 def checkout(request):
+
     if request.user.is_authenticated:
         user = request.user
         orders = Order.objects.filter(user=user, status=Order.AWAIT)
+        items_count = 0 
         for order in orders:
+            items = order.items.copy()  # Create a copy to avoid modifying the dictionary during iteration
+            items_count += len(items)
+            for product, quantity in items.items():
+                if product.quantity < quantity:
+                    messages.error(request, f'Помилка: У наявності лише {product.quantity} {product.name}')
+                    return redirect('cart')
+            for product, quantity in items.items():
+                product.quantity -= quantity
+                product.save()
             order.status = Order.COMPLETED
             order.save()
+        if items_count == 0:
+            messages.error(request, f'Помилка: Ви нічого не замовили')
+            return redirect('cart')
     else:
         messages.error(request, 'Авторизуйтесь')
         return redirect('login')
