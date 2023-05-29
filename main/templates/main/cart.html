@@ -127,32 +127,69 @@
     <!-- Breadcrumb End -->
 
     <!-- cart.html -->
-    <form method="POST" action="{% url 'checkout' %}">
-        {% csrf_token %}
+    
+    {% csrf_token %}
+    
+    <h2>Кошик</h2>
+    
+    {% if orders %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Назва</th>
+                    <th>Кількість</th>
+                    <th>Ціна</th>
+                    <th>Дії</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% csrf_token %}
+                {% for order in orders %}
+                    {% for product, quantity in order.items.items %}
+                        <tr>
+                            <td>{{ product.name }}</td>
+                            <td>
+                                <form id="update-quantity-form" method="post" action="{% url 'update_quantity' order.id %}">
+                                    {% csrf_token %}
+                                    <input type="number" name="quantity{{ product.id }}" value="{{ quantity }}" onchange="updateQuantity(this)">
+                                </form>
+                                
+                                <script>
+                                    function updateQuantity(input) {
+                                      var form = document.getElementById('update-quantity-form');
+                                      var csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;  // Get the CSRF token value
+                                      var csrfInput = document.createElement('input');  // Create a new input element
+                                      csrfInput.type = 'hidden';
+                                      csrfInput.name = 'csrfmiddlewaretoken';
+                                      csrfInput.value = csrfToken;
+                                      form.appendChild(csrfInput);  // Append the CSRF token input to the form
+                                      form.submit();
+                                    }
+                                </script>
+                            </td>
+                            <td>{{ product.price }}</td>
+                            <td>
+                                <form method="post" action="{% url 'remove_from_cart' order.id product.id %}">
+                                    <button type="submit">Видалити</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <h3>Загальна сума: {{ order.get_total_price }}</h3>
+                {% endfor %}
+            </tbody>
+        </table>
         
-        <h2>Кошик</h2>
-        
-        {% if orders %}
-          <ul>
-            {% for order in orders %}
-              <li>
-                <p>{{ order.product.name }}</p>
-                <p>Ціна: {{ order.product.price }}</p>
-                <a href="{% url 'remove_from_cart' order.id %}">Видалити</a>
-              </li>
-            {% endfor %}
-          </ul>
+        <form method="POST" action="{% url 'checkout' %}">
+            {% csrf_token %}
+            <h3>Адреса доставки:</h3>
+            <input type="text" name="address" required>
+            <button type="submit">Відправити</button>
+        </form>
+    {% else %}
+        <p>У кошику немає товарів</p>
+    {% endif %}
 
-          <h3>Загальна сума: {{ total_price }}</h3>
-
-          <h3>Адреса доставки:</h3>
-          <input type="text" name="address" required>
-        
-          <button type="submit">Відправити</button>
-        {% else %}
-          <p>У кошику немає товарів</p>
-        {% endif %}
-      </form>
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-secondary mt-5 pt-5">
         <div class="row px-xl-5 pt-5">

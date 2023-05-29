@@ -21,61 +21,56 @@ def detail(request, pk):
 
 def add_to_cart(request, pk):
     if request.user.is_authenticated:
-        product = Product.objects.get(pk=pk)
-        # Створити новий об'єкт Order
-        order = Order(user=request.user, product=product)
-        # Зберегти об'єкт Order
-        order.save()
-        return redirect('cart')  
+        user = request.user
+        order, created = Order.objects.get_or_create(user=user, status=Order.AWAIT)
+        product = get_object_or_404(Product, pk=pk)
+        order.add_item(product)
+        return redirect('cart')
     else:
         messages.error(request, 'Авторизуйтесь')
         return redirect('login')
 
+def update_quantity(request, order_id):
+    if request.method == 'POST':
+        order = get_object_or_404(Order, id=order_id, status=Order.AWAIT)
+        keys = list(order.items.keys())  # Create a copy of the keys
+        for product in keys:
+            quantity = int(request.POST.get(f'quantity{product.id}', 0))
+            if quantity > 0:
+                order.items[product] = quantity
+            else:
+                order.remove_item(product)
+    return redirect('cart')
 
 def cart(request):
-    # Перевірка, чи користувач аутентифікований
     if request.user.is_authenticated:
-        # Отримати замовлення, пов'язані з користувачем
-        orders = Order.objects.filter(user=request.user)
-        total_price = sum(order.product.price for order in orders)
-
-        context = {
-            'orders': orders,
-            'total_price': total_price,
-        }
+        user = request.user
+        orders = Order.objects.filter(user=user, status=Order.AWAIT)
     else:
-        # Якщо користувач неаутентифікований, повернути порожній список замовлень
         orders = []
-
-        context = {
-            'orders': orders
-        }
+    context = {
+        'orders': orders
+    }
     return render(request, 'main/cart.html', context)
 
-def remove_from_cart(request, order_id):
+def remove_from_cart(request, order_id, product_id):
     if request.user.is_authenticated:
-        try:
-            order = Order.objects.get(id=order_id, user=request.user)
-            order.delete()
-        except Order.DoesNotExist:
-            pass
-
+        user = request.user
+        order = get_object_or_404(Order, id=order_id, user=user, status=Order.AWAIT)
+        product = get_object_or_404(Product, id=product_id)
+        order.remove_item(product)
     return redirect('cart')
 
 def checkout(request):
     if request.user.is_authenticated:
         user = request.user
+        orders = Order.objects.filter(user=user, status=Order.AWAIT)
+        for order in orders:
+            order.status = Order.COMPLETED
+            order.save()
     else:
         messages.error(request, 'Авторизуйтесь')
         return redirect('login')
-
-    cart = Order.objects.filter(user=user)
-
-    # Очищення кошика
-    for order in cart:
-        order.delete()
-
-    # Перенаправлення на головну сторінку
     return redirect('/')
 
 
