@@ -8,7 +8,7 @@ class ProductAdmin(admin.ModelAdmin):
 admin.site.register(Product, ProductAdmin)
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['user', 'product', 'status']
-    list_filter = ['status']
+    list_display = ['user', 'product']
+    list_filter = ['user']
 
 admin.site.register(Order, OrderAdmin)

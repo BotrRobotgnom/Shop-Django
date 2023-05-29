@@ -12,27 +12,72 @@ def shop(request):
     }
     return render(request, 'main/shop.html', context)
 
-def detail(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
+def detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
     context = {
         'product': product
     }
     return render(request, 'main/detail.html', context)
 
+def add_to_cart(request, pk):
+    if request.user.is_authenticated:
+        product = Product.objects.get(pk=pk)
+        # Створити новий об'єкт Order
+        order = Order(user=request.user, product=product)
+        # Зберегти об'єкт Order
+        order.save()
+        return redirect('cart')  
+    else:
+        messages.error(request, 'Авторизуйтесь')
+        return redirect('login')
+
+
 def cart(request):
-    return render(request, 'main/cart.html')
+    # Перевірка, чи користувач аутентифікований
+    if request.user.is_authenticated:
+        # Отримати замовлення, пов'язані з користувачем
+        orders = Order.objects.filter(user=request.user)
+        total_price = sum(order.product.price for order in orders)
+
+        context = {
+            'orders': orders,
+            'total_price': total_price,
+        }
+    else:
+        # Якщо користувач неаутентифікований, повернути порожній список замовлень
+        orders = []
+
+        context = {
+            'orders': orders
+        }
+    return render(request, 'main/cart.html', context)
+
+def remove_from_cart(request, order_id):
+    if request.user.is_authenticated:
+        try:
+            order = Order.objects.get(id=order_id, user=request.user)
+            order.delete()
+        except Order.DoesNotExist:
+            pass
+
+    return redirect('cart')
 
 def checkout(request):
     if request.user.is_authenticated:
-        # Get the user's cart or create a new one
-        cart, created = Order.objects.get_or_create(user=request.user, status=Order.CART)
-        context = {
-            'cart': cart
-        }
-        return render(request, 'main/checkout.html', context)
+        user = request.user
     else:
-        messages.error(request, 'You need to be logged in to proceed to checkout.')
+        messages.error(request, 'Авторизуйтесь')
         return redirect('login')
+
+    cart = Order.objects.filter(user=user)
+
+    # Очищення кошика
+    for order in cart:
+        order.delete()
+
+    # Перенаправлення на головну сторінку
+    return redirect('/')
+
 
 def contact(request):
     return render(request, 'main/contact.html')
