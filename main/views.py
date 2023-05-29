@@ -1,27 +1,42 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import auth, messages
-from .models import User
+from .models import User, Product, Order
 
-
-# Create your views here.
 def index(request):
     return render(request, 'main/index.html')
-    #return HttpResponse("Тест")
 
 def shop(request):
-    return render(request, 'main/shop.html')
+    products = Product.objects.all()
+    context = {
+        'products': products
+    }
+    return render(request, 'main/shop.html', context)
 
-def detail(request):
-    return render(request, 'main/detail.html')
+def detail(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    context = {
+        'product': product
+    }
+    return render(request, 'main/detail.html', context)
 
 def cart(request):
     return render(request, 'main/cart.html')
 
 def checkout(request):
-    return render(request, 'main/checkout.html')
+    if request.user.is_authenticated:
+        # Get the user's cart or create a new one
+        cart, created = Order.objects.get_or_create(user=request.user, status=Order.CART)
+        context = {
+            'cart': cart
+        }
+        return render(request, 'main/checkout.html', context)
+    else:
+        messages.error(request, 'You need to be logged in to proceed to checkout.')
+        return redirect('login')
 
 def contact(request):
     return render(request, 'main/contact.html')
+
 
 def register(request):
     if request.method == 'POST':
