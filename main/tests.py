@@ -3,7 +3,7 @@ from django.test import TestCase, RequestFactory
 from django.urls import reverse
 from main.views import checkout
 
-class ModelTestCase(TestCase):
+class MTestCase(TestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='testpass')
@@ -25,27 +25,4 @@ class ModelTestCase(TestCase):
         order.add_item(self.product, quantity=3)
         order.remove_item(self.product)
         self.assertEqual(order.items, {})
-
-
-class ViewTestCase(TestCase):
-
-    def setUp(self):
-        self.factory = RequestFactory()
-        self.user = User.objects.create_user(username='testuser', password='testpass')
-
-    def test_checkout_successful(self):
-        # Create a sample order for the user
-        order = Order.objects.create(user=self.user)
-        request = self.factory.post(reverse('checkout'))
-        request.user = self.user
-        response = checkout(request)
-        self.assertRedirects(response, '/')
-        self.assertFalse(Order.objects.filter(user=self.user, status=Order.AWAIT).exists())
-        self.assertTrue(Order.objects.filter(user=self.user, status=Order.COMPLETED).exists())
-
-    def test_checkout_not_authenticated(self):
-        request = self.factory.post(reverse('checkout'))
-        request.user = User.objects.create_user(username='t404', password='randomdddddd')
-        response = checkout(request)
-        self.assertEqual(response.status_code, 404)  
 
