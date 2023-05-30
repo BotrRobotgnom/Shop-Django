@@ -33,10 +33,6 @@ class ViewTestCase(TestCase):
         self.factory = RequestFactory()
         self.user = User.objects.create_user(username='testuser', password='testpass')
 
-    def test_checkout_not_authenticated(self):
-            response = self.client.get('/checkout/')
-            self.assertEqual(response.status_code, 404)  
-
     def test_checkout_successful(self):
         # Create a sample order for the user
         order = Order.objects.create(user=self.user)
@@ -46,3 +42,10 @@ class ViewTestCase(TestCase):
         self.assertRedirects(response, '/')
         self.assertFalse(Order.objects.filter(user=self.user, status=Order.AWAIT).exists())
         self.assertTrue(Order.objects.filter(user=self.user, status=Order.COMPLETED).exists())
+
+    def test_checkout_not_authenticated(self):
+        request = self.factory.post(reverse('checkout'))
+        request.user = User.objects.create_user(username='t404', password='randomdddddd')
+        response = checkout(request)
+        self.assertEqual(response.status_code, 404)  
+
