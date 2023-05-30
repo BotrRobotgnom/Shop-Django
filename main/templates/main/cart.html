@@ -170,6 +170,7 @@
                             <td>{{ product.price }}</td>
                             <td>
                                 <form method="post" action="{% url 'remove_from_cart' order.id product.id %}">
+                                    {% csrf_token %}
                                     <button type="submit">Видалити</button>
                                 </form>
                             </td>
