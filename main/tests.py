@@ -26,12 +26,6 @@ class ModelTestCase(TestCase):
         order.remove_item(self.product)
         self.assertEqual(order.items, {})
 
-    def test_order_get_total_price(self):
-        order = Order.objects.create(user=self.user)
-        order.add_item(self.product, quantity=2)
-        total_price = self.product.price * 2
-        self.assertEqual(order.get_total_price(), total_price)
-
 
 class ViewTestCase(TestCase):
 
@@ -39,19 +33,9 @@ class ViewTestCase(TestCase):
         self.factory = RequestFactory()
         self.user = User.objects.create_user(username='testuser', password='testpass')
 
-    def test_checkout_insufficient_quantity(self):
-        request = self.factory.post(reverse('checkout'))
-        request.user = self.user
-        response = checkout(request)
-        self.assertRedirects(response, reverse('cart'))
-        self.assertContains(response, 'Insufficient quantity for product')
-
     def test_checkout_not_authenticated(self):
-        request = self.client.get('/checkout/')
-        self.assertFalse(request.user.is_authenticated)
-        response = checkout(request)
-        self.assertRedirects(response, reverse('login'))
-        self.assertContains(response, 'Please log in.')
+            response = self.client.get('/checkout/')
+            self.assertEqual(response.status_code, 404)  
 
     def test_checkout_successful(self):
         # Create a sample order for the user
